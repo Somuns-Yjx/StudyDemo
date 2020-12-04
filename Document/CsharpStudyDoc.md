@@ -1,6 +1,6 @@
 # Csharp学习文档
 ## 五大基本类型 重中之重
-![](./图片/五大基本类型.png)
+![](./Pictures/5 Basic Types.png)
 
 
 ### 装箱   
@@ -199,4 +199,120 @@ public static Action myAction = new Action(Test.ActionTest.PrintHelloWorld);
             }
         }
         
+```
+
+### 语句
+#### 反编译
+##### C
+项目属性->输出文件->汇编输出Fas
+.asm文件
+##### Csharp
+Win+S 搜索 Vs Tools ->开发人员命令提示
+输入ildasm
+将exe移入
+
+#### 块语句
+能写在方法体里的只有三种语句
+1. 声明语句
+```Csharp 
+byte variable = 1
+```
+2. 嵌入式语句
+```Csharp
+if(variable == 1) Console.WriteLine(variable.ToString());
+```
+3. 标签语句
+```Csharp
+Head:if(variable == 1) 
+Console.WriteLine(variable.ToString());
+goto Head;
+```
+#### Try-Catch-Finally
+不论如何，Finally总会被执行
+```Csharp
+public class TryStatement
+        {
+            private static double Add(string a, string b)
+            {
+                double A = Convert.ToDouble(a);
+                double B = Convert.ToDouble(b);
+                return A + B;
+            }
+            public static void Show()
+            {
+                try
+                {
+                    Add("a", "b");
+                }
+                catch (Exception Ex)
+                {
+                    Console.WriteLine(Ex.Message);
+                }
+                finally
+                {
+                    Console.WriteLine("Finished!");
+                }
+            }
+        }
+```
+
+#### DoWhile （& Goto）
+Do无条件执行一次
+```Csharp
+public class DoWhile
+        {
+            public static void Show()
+            {
+                int sum = 0;
+                int score = -1;
+                do
+                {
+                Head: try	// Head标签
+                    {
+                        Console.WriteLine("Input the number1");
+                        int x = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("Input the number2");
+                        int y = Convert.ToInt32(Console.ReadLine());
+                        sum = x + y;
+                        score++;
+                    }
+                    catch (Exception Ex)
+                    {
+                        Console.WriteLine(Ex.Message);
+                        goto Head;	// 因为Continue仍会判断条件，因此用了goto
+                    }
+                } while (sum == 100);
+                Console.WriteLine("Game Over" + "\n" + "Your Score is {0}", score);
+            }
+        }
+```
+#### For
+```Csharp
+for(;;;) 等同于 while(true)
+```
+
+#### Foreach
+底层实现：迭代器
+```Csharp
+public class IteratorExample
+        {
+            public static void ShowIterator()
+            {
+                int[] array = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                IEnumerator enumerator = array.GetEnumerator(); // 指月
+                while(enumerator.MoveNext())
+                {
+                    Console.Write(enumerator.Current+" ");
+                }
+                Console.WriteLine("\n");
+            }
+            public static void ShowForeach()
+            {
+                int[] array = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                foreach (var current in array)
+                {
+                    Console.Write(current + " ");
+                }
+            }
+        }
 ```
