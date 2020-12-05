@@ -122,14 +122,14 @@ namespace Section17
             public static void Show()
             {
                 System.Diagnostics.Process.Start(Url.SoutheastUniversityUrl);
-                
+
             }
             class Url
             {
-                public  const string SoutheastUniversityUrl = "https://cse.seu.edu.cn/xlsszs/list.htm";
+                public const string SoutheastUniversityUrl = "https://cse.seu.edu.cn/xlsszs/list.htm";
             }
         }
-        
+
 
 
 
