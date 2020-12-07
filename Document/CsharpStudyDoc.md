@@ -3,15 +3,10 @@
 ![](./Pictures/5 Basic Types.png)
 
 
-### 装箱   
+### 装箱拆箱   
 装箱：把一个栈上值类型的值封成引用类型的实例 （第七讲：变量与对象2最后20分钟）
 拆箱：将堆上的实例拆成值类型放在栈上
 栈—>堆—>堆实例化—>栈引用地址
-
-### 实例化
-变量、方法等类中成员在堆内存上实际分配空间
-### 对象
-如果一个类仅仅实例化，并不保存这个实例的地址，那么该实例的坐标无法被定位来，因此需要一个变量来存储该实例的地址，以供**后续使用**，这个变量即为对象。
 
 ```Csharp
 int x = 100 ; 
@@ -19,6 +14,12 @@ Object obj = x;
 ```
 1：栈为x分配4字节空间并且内容填100的二进制
 2：将x的值在堆上赋值（实例化），再将其地址赋给obj在栈上的4字节空间
+
+### 实例化
+变量、方法等类中成员在堆内存上实际分配空间
+
+### 对象
+如果一个类仅仅实例化，并不保存这个实例的地址，那么该实例的**坐标**无法被定位，因此需要一个变量来存储该实例的地址，以供后续使用，这个变量即为对象。
 
 第九讲 最后半个小时  栈
 
@@ -48,8 +49,8 @@ public class Brackets
                     s.score = 100 + index;
                     stu.Add(s.name, s);
                 }
-                Student number50 = stu["s50"];
-                Console.WriteLine(number50.score);
+                Student stu50 = stu["s50"];
+                Console.WriteLine(stu50.score);
             }
 
             class Student
@@ -102,7 +103,8 @@ public class New
                 var person = new { Name = "夏东南", Age = 24 };
                 Console.WriteLine(person.Name);
                 Console.WriteLine(person.Age);
-                Console.WriteLine(person.GetType().Name);
+                Console.WriteLine(person.GetType().Name); 
+                // <>f__AnonymousType0`2 匿名类型
             }
         }
 ```
@@ -121,7 +123,7 @@ public class ObtainAddr
                     stu.score = 390;
                     Student* s = &stu;
                     s->score = 400;
-                    Console.WriteLine(stu.score);
+                    Console.WriteLine(stu.score); // 400
                 }
             }
             struct Student
@@ -167,7 +169,7 @@ public class ObtainAddr
             // a.下只有eat方法
 ```
 #### 操作符&& 和&
-&和&&均可以表示逻辑与，但&& 具有短路效应
+&和&&均可以表示逻辑与，但**&& 具有短路效应**
 ```Csharp
             int x = 1;
             int y = 1;
@@ -187,9 +189,9 @@ public class NullableType
             public static void Show()
             {
                 Nullable<int> score = null;         
-                // int ? score = null 与左边表达式相等
+                // int ? score = null; 与左边表达式相等
                 Console.WriteLine(score.ToString());    
-                // score = score ?? 1; 如果score为null，则赋1
+                // score = score ?? 1; 如果score为null，则赋1；若不为null返回本身
                 score = 150;
                 Console.WriteLine(score.ToString());
             }
@@ -214,8 +216,9 @@ public class Condition
 ##### C
 项目属性->输出文件->汇编输出Fas
 .asm文件
+
 ##### Csharp
-Win+S 搜索 Vs Tools ->开发人员命令提示
+Win+S 搜索 Vs Tools ->开发人员命令提示 // 或Win菜单找到VS，->Vs Tools
 输入ildasm
 将exe移入
 
@@ -315,7 +318,7 @@ public class IteratorExample
                 }
                 Console.WriteLine("\n");
             }
-            public static void ShowForeach()
+            public static void ShowForeach() // 迭代器的实现
             {
                 int[] array = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
                 foreach (var current in array)
@@ -343,7 +346,7 @@ public class StaticField
             }
             class Student
             {
-                public static int Amount;
+                public static int Amount;   // 此处static 以便上方Student.Amount引用
 
                 public Student()
                 {
@@ -376,8 +379,8 @@ public class Property
                 finally
                 {
                     Console.WriteLine("-------------------------------------------");
-                }
-            }
+            	}    
+            
             class Student
             {
                 private int my_Age;
@@ -385,7 +388,7 @@ public class Property
                 {
                     set
                     {
-                        if (value >= 0 && value <= 120)
+                        if( value >= 0 && value <= 120)
                         { my_Age = value; }
                         else
                         {
@@ -551,6 +554,7 @@ public class OutParaRef
 ```
 #### 数组参数
 **方便输入**
+
 ```Csharp
 Console.WriteLine("{0}{1}{2}",x,y,z); // 仔细观察可以发现，xyz的输入类型即为params
 ```
@@ -635,3 +639,6 @@ namespace Section18
     }
 }
 ```
+### 委托事件
+#### 什么是委托
+**函数指针”升级版“**

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Section18
 {
-    class Test
+    class Test // 参数
     {
         // 引用参数
         public class RefPara
