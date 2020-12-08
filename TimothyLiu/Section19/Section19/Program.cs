@@ -10,6 +10,19 @@ namespace Section19
     {
         static void Main(string[] args)
         {
+            Test.Delegate.Show();
+            Console.WriteLine("------------------------------------");
+            Test.Delegate2.Show();
+            Console.WriteLine("------------------------------------");
+            NewTest.Show();
+            Console.WriteLine("------------------------------------");
+            Test.ThreadTest.Show();
+            Console.WriteLine("------------------------------------");
+            //Test.InterFace.Show();            
+            
+
+
+            Console.ReadKey();
         }
     }
 }

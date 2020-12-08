@@ -1,5 +1,5 @@
 # Csharp学习文档
-## 五大基本类型 重中之重
+## 五大基本类型
 ![](./Pictures/5 Basic Types.png)
 
 
@@ -461,7 +461,7 @@ public class Constant
 ```
 ### 参数
 #### ref 引用参数
-** 值类型【结构体、枚举】**
+值类型【结构体、枚举】
 传值会**创建参数的副本**，副本与原始参数地址不同，但是二者指向同一地址，即
 **实例在堆内存的地址**  因此改变副本并不影响原始数据
 
@@ -495,8 +495,10 @@ public class Constant
             }
             public static void ChangeRefPara(ref Student stu)
             {
-                stu = new Student { ID = 10 };              //  新建对象 并初始化ID   赋给引用变量stu
-                Console.WriteLine("Student 1 :" + stu.ID + " " + stu.GetHashCode()); // 打印本方法变量stu HashCode
+                stu = new Student { ID = 10 };              
+                //  新建对象 并初始化ID   赋给引用变量stu
+                Console.WriteLine("Student 1 :" + stu.ID + " " + stu.GetHashCode()); 
+                // 打印本方法变量stu HashCode
             }
             public class Student
             {
@@ -508,6 +510,7 @@ public class Constant
 #### 输出参数
 ##### 值类型
 ** 不修改原始数据 **
+
 ```Csharp
 public class OutPara  // 输出参数
         {
@@ -640,5 +643,279 @@ namespace Section18
 }
 ```
 ### 委托事件
-#### 什么是委托
+#### C++委托
 **函数指针”升级版“**
+重新认识了下Add、Sub函数
+```C++
+#include <stdio.h>
+#include<limits>
+
+typedef int(*Calc)(int, int); // 函数指针
+typedef int(*Calc2)(int, int); // 函数指针
+
+
+int Add(int a, int b)
+{
+	if (a > 0 && b > 0)
+	{
+		if (a > INT_MAX - b)
+			return a + b;
+		else
+			return -1;
+	}
+	else if (a < 0 && b < 0)
+	{
+		if (a > INT_MIN - b)
+			return a + b;
+		else
+			return -2;
+	}
+	else
+		return a + b;
+}
+
+int Sub(int a, int b)
+{
+	if ((a > 0 && b > 0) || (a < 0 && b < 0))
+	{
+		return a - b;
+	}
+	else	if (a > 0 && b < 0)
+	{
+		if (a < INT_MAX + b)
+			return a - b;
+		else
+			return 3;
+	}
+	else if (a < 0 && b>0)
+	{
+		if (a > b + INT_MIN)
+			return a - b;
+		else
+			return 4;
+	}
+	else
+		return a - b;
+}
+int main()
+{
+	Calc FunctionPoint1 = &Add;		
+	// 利用函数指针，可以不直接调用函数，并且函数修改后无需在其他函数中再次修改
+	Calc2 FunctionPoint2 = &Sub;
+	int res1 = FunctionPoint1(0, 0);
+	int res2 = FunctionPoint2(0, 0);
+	printf("Func1Res = %d\n", res1);
+	printf("Func2Res = %d\n", res2);
+	system("pause");
+}
+```
+#### C#委托 
+**应当写在名称空间体下，与其他类平级**
+
+```Csharp
+ public class Delegate
+{
+            public delegate double del(double x, double y);
+            public static void Show()
+            {
+                Calculator calculator = new Calculator();
+                Action action = new Action(calculator.Report);
+                action(); // action.Invoke();
+                Func<double, double, double> func1 = new Func<double, double, double>(calculator.Add);
+                Func<double, double, double> func2 = new Func<double, double, double>(calculator.Sub);
+                double res = func1(1, 2);
+                Console.WriteLine("Func1 Show " + res);
+                res = func2(1, 2);
+                Console.WriteLine("Func2 Show " + res);
+
+                Console.WriteLine("------------------------------------");
+                del del1 = new del(calculator.Add);
+                del del2 = new del(calculator.Sub);
+                del del3 = new del(calculator.Mul);
+                del del4 = new del(calculator.Div);
+                double x = 100;
+                double y = 200;
+                Console.WriteLine(del1(x, y));
+                Console.WriteLine(del2(x, y));
+                Console.WriteLine(del3(x, y));
+                Console.WriteLine(del4(x, y));
+
+            }
+            public class Calculator
+            {
+                public void Report()
+                {
+                    Console.WriteLine("Action Show");
+                    Console.WriteLine("------------------------------------");
+                }
+                public double Add(double a, double b)
+                {
+                    return a + b;
+                }
+                public double Sub(double a, double b)
+                {
+                    return a - b;
+                }
+                public double Mul(double a, double b)
+                {
+                    return a * b;
+                }
+                public double Div(double a, double b)
+                {
+                    return a / b;
+                }
+            }
+        }
+```
+```Csharp
+ public class Delegate2
+{
+            public static void Show()
+            {
+                ProductFactory productFactory = new ProductFactory();
+                WrapFactory wrapFactory = new WrapFactory();
+
+                Func<Product> func1 = new Func<Product>(productFactory.MakePizza);
+                Func<Product> func2 = new Func<Product>(productFactory.MakeToyCar);
+
+                Box box1 = wrapFactory.WrapProduct(func1);
+                Box box2 = wrapFactory.WrapProduct(func2);
+                Console.WriteLine(box1.Products.Name);
+                Console.WriteLine(box2.Products.Name);
+
+            }
+            class Product
+            {
+                public string Name { get; set; }
+            }
+            class Box
+            {
+                public Product Products { get; set; }
+            }
+            class WrapFactory
+            {
+                public Box WrapProduct(Func<Product> getProduct)
+                {
+                    Box box = new Box();
+                    Product product = getProduct();
+                    box.Products = product;
+                    return box;
+                }
+            }
+            class ProductFactory
+            {
+                public Product MakePizza()
+                {
+                    Product product = new Product();
+                    product.Name = "Pizza";
+                    return product;
+                }
+                public Product MakeToyCar()
+                {
+                    Product product = new Product();
+                    product.Name = "Toy Car";
+                    return product;
+                }
+            }
+        }
+```
+加上日志信息的委托
+```Csharp
+ class NewTest
+{
+        public static void Show()
+        {
+            ProductFactory productFactory = new ProductFactory();
+            WrapFactory wrapFactory = new WrapFactory();
+            Action<Product> Logs = new Action<Product>(Logger.Log);
+
+            Func<Product> func1 = new Func<Product>(productFactory.MakePizza);
+            Func<Product> func2 = new Func<Product>(productFactory.MakeToyCar);
+
+
+            Box box1 = wrapFactory.WrapProduct(func1, Logs);
+            Box box2 = wrapFactory.WrapProduct(func2, Logs);
+            Console.WriteLine(box1.Products.Name);
+            Console.WriteLine(box2.Products.Name);
+
+        }
+        class Product
+        {
+            public string Name { get; set; }
+            public int Pirce { get; set; }
+        }
+        class Box
+        {
+            public Product Products { get; set; }
+        }
+        class WrapFactory
+        {
+            public Box WrapProduct(Func<Product> getProduct, Action<Product> getLog)
+            {
+                Box box = new Box();
+                Product product = getProduct();
+                box.Products = product;
+                getLog(product);
+                return box;
+            }
+        }
+        class Logger
+        {
+            public static void Log(Product product)
+            {
+                Console.WriteLine(product.Name + " created at " + DateTime.UtcNow + " price is " + product.Pirce);
+            }
+        }
+        class ProductFactory
+        {
+            public Product MakePizza()
+            {
+                Product product = new Product();
+                product.Name = "Pizza";
+                product.Pirce = 12;
+                return product;
+            }
+            public Product MakeToyCar()
+            {
+                Product product = new Product();
+                product.Name = "Toy Car";
+                product.Pirce = 100;
+                return product;
+            }
+        }
+    }
+```
+线程中委托
+```Csharp
+public class ThreadTest
+{
+            public static void Show()
+            {
+                Student s1 = new Student() { ID = 1, Color = ConsoleColor.Blue };
+                Student s2 = new Student() { ID = 2, Color = ConsoleColor.Green };
+                Student s3 = new Student() { ID = 3, Color = ConsoleColor.Cyan };
+
+                Action a1 = new Action(s1.DoHomework);
+                Action a2 = new Action(s2.DoHomework);
+                Action a3 = new Action(s3.DoHomework);
+                a1();   // a1 += a2; a1 += a3; 则为多播委托，执行a1等同a1a2a3
+                a2();
+                a3();
+            }
+            public class Student
+            {
+                public int ID { get; set; }
+                public ConsoleColor Color { get; set; }
+
+                public void DoHomework()
+                {
+                    for (int i = 1; i <= 5; i++)
+                    {
+                        Console.ForegroundColor = this.Color;
+                        Console.WriteLine("Student {0} is doing homework for {1} hour(s)", this.ID, i);
+                        Thread.Sleep(500);
+                    }
+                }
+            }
+        }
+```
