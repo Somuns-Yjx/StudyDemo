@@ -958,4 +958,166 @@ public class InterFace
             }
 }
 ```
+### 事件 
 
+Windows窗体应用程序
+
+```Csharp
+namespace Section20_21
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            // 方法一
+            this.btnMybtn1.Click += MybtnClicked;
+            this.btnMybtn2.Click += MybtnClicked;
+
+            // 方法二 拉姆达表达式
+            /* this.btnMybtn1.Click += (sender, e) =>
+                {
+                    txtMsg.Text = "Btn1Method2 Used";
+                };  */
+
+            // 方法三 匿名方法
+            /* this.btnMybtn1.Click += delegate(object sender, EventArgs e)
+            {
+                txtMsg.Text = "Btn1Method3 Used";
+            }; */
+
+            // 方法四 设计器订阅同一事件
+        }
+
+        private void MybtnClicked(object sender, EventArgs e)
+        {
+            if (sender == this.btnMybtn1)
+                txtMsg.Text = "Btn1 Clicked !";
+            if (sender == this.btnMybtn2)
+                txtMsg.Text = "Btn2 Clicked !";
+        }
+    }
+}
+```
+
+效果如图所示，由于订阅同一事件，点击btn1、2均触发相同事件。
+
+![](\Pictures\Event.png)
+
+#### 完整声明
+
+```Csharp
+ public class Restaurant
+{
+        public static void Show()
+        {
+            Customer customer = new Customer();
+            Waiter waiter = new Waiter();
+            customer.Order += waiter.Action;
+            customer.Action();
+            customer.PayTheBill();
+        }
+    }
+    public class OrderEventArgs : EventArgs
+    {
+        public string DishName { get; set; }
+        public string Size { get; set; }
+    }
+
+    public delegate void OrderEventHandler(Customer customer, OrderEventArgs e);
+
+    public class Waiter
+    {
+        public void Action(Customer customer, OrderEventArgs e)
+        {
+            Console.WriteLine("Waiter will serve you the dish {0} ", e.DishName);
+            double price = 10;
+            switch (e.Size)
+            {
+                case "large":
+                    price *= 1.5;
+                    break;
+                case "small":
+                    price *= 0.5;
+                    break;
+                default:
+                    break;
+            }
+            customer.Bill += price;
+        }
+    }
+
+    public class Customer
+    {
+        public double Bill { get; set; }
+        private OrderEventHandler orderEventHandler;
+        public event OrderEventHandler Order
+        {
+            add
+            {
+                this.orderEventHandler += value;
+            }
+            remove
+            {
+                this.orderEventHandler -= value;
+            }
+        }
+
+        public void WalkIn()
+        {
+            Console.WriteLine("Customer walks in the restaurant .");
+        }
+        public void SitDown()
+        {
+            Console.WriteLine("Customer sits down . ");
+        }
+        public void Think()
+        {
+            if (orderEventHandler != null)
+            {
+                OrderEventArgs e = new OrderEventArgs();
+                e.DishName = "Yuxiang Pork";
+                e.Size = "large";
+                Console.WriteLine("Customer orders the {0} ,for {1} size ", e.DishName, e.Size);
+                orderEventHandler.Invoke(this, e);
+            }
+        }
+
+        public void PayTheBill()
+        {
+            Console.WriteLine("Customer : I will pay {0} yuan . ", Bill);
+        }
+        public void Action()
+        {
+            Console.WriteLine();
+            WalkIn();
+            SitDown();
+            Think();
+        }
+}
+```
+
+#### 简化声明
+
+```Csharp
+public class Customer
+{
+     public event OrderEventHandler Order;
+	// ... ...
+}
+```
+
+#### 注意事项
+
+为什么事件是基于委托类型来声明的 ?
+
+答：
+·站在source的角度来看，是为了表明source能对外传递哪些消息
+·站在subscriber的角度来看，它是一种约定，是为了约束能够使用什么样签名的方法来处理(响应）事件
+·委托类型的实例将用于存储（引用）事件处理器
+
+对比事件与属性：
+属性不是字段：很多时候属性是字段的包装器,这个包装器用来保护字段不被滥用
+事件不是委托字段：它是委托字段的包装器 ，这个包装器用来保护委托字段不被滥用
+包装器永远都不可能是被包装的东西
