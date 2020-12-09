@@ -896,6 +896,7 @@ public class ThreadTest
                 Student s3 = new Student() { ID = 3, Color = ConsoleColor.Cyan };
 
                 Action a1 = new Action(s1.DoHomework);
+                // a1.BeginInvoke();异步委托【会新开线程操作，主程序继续执行】
                 Action a2 = new Action(s2.DoHomework);
                 Action a3 = new Action(s3.DoHomework);
                 a1();   // a1 += a2; a1 += a3; 则为多播委托，执行a1等同a1a2a3
@@ -919,3 +920,42 @@ public class ThreadTest
             }
         }
 ```
+**接口代替委托**
+
+```Csharp	
+public class InterFace
+{
+            public static void Show()
+            {
+ 
+            }
+            interface IProductFactory
+            {
+                Product Make();
+            }
+            public class Product
+            {
+                public string Name { get; set; }
+            }
+
+            public class PizzaFactory : IProductFactory
+            {
+                public Product Make()
+                {
+                    Product product = new Product();
+                    product.Name = "Pizza";
+                    return product;
+                }
+            }
+            public class ToyCarFactory : IProductFactory
+            {
+                public Product Make()
+                {
+                    Product product = new Product();
+                    product.Name = "Toy Car";
+                    return product;
+                }
+            }
+}
+```
+
