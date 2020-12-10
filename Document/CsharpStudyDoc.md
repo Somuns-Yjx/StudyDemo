@@ -25,6 +25,9 @@ Object obj = x;
 
 ### 操作符
 #### Action 委托
+
+**无返回值类型委托**
+
 ```c#
 public static Action myAction = new Action(PrintHelloWorld);
             public static void PrintHelloWorld()
@@ -710,7 +713,17 @@ int main()
 }
 ```
 #### C#委托 
+##### 一般委托
+
 **应当写在名称空间体下，与其他类平级**
+
+**委托是一种特殊的类类型**
+
+**Function委托一般是有返回值，有参数的委托**
+
+**Action一般是无返回值无参数的委托**
+
+**泛型委托是以上两种委托的根源**
 
 ```Csharp
  public class Delegate
@@ -958,6 +971,55 @@ public class InterFace
             }
 }
 ```
+##### 泛型委托
+
+**泛型委托参数推断**
+
+```Csharp
+namespace Section23
+{
+    delegate double MyDele(double a, double b);       // 一般委托
+    delegate T MyGenericDele<T>(T a, T b);            // 泛型委托
+    class NormalDele
+    {
+        public static void Show()
+        {
+            MyDele myDele = new MyDele(Add);
+            double res = myDele(1, 2);
+            Console.WriteLine(res);
+        }
+
+        public static double Add(double a, double b)
+        {
+            return a + b;
+        }
+    }
+    class GenericDele
+    {
+        public static void Show()
+        {
+            MyGenericDele<double> dele1 = new MyGenericDele<double>(Mul);
+            Console.WriteLine(dele1(5, 20));
+            MyGenericDele<int> dele2 = new MyGenericDele<int>(Sub);
+            Console.WriteLine(dele2(10,20));
+
+        }
+        public static double Mul(double a, double b)
+        {
+            return a * b;
+        }
+        public static int Sub(int a, int b)
+        {
+            return a - b;
+        }
+    }
+
+}
+
+```
+
+
+
 ### 事件 
 
 Windows窗体应用程序
@@ -1121,3 +1183,46 @@ public class Customer
 属性不是字段：很多时候属性是字段的包装器,这个包装器用来保护字段不被滥用
 事件不是委托字段：它是委托字段的包装器 ，这个包装器用来保护委托字段不被滥用
 包装器永远都不可能是被包装的东西
+
+### Lambda表达式
+
+```Csharp
+class LambdaDele
+{
+        public static void Show()
+        {
+            Console.WriteLine(func1(100, 200));
+            Console.WriteLine(func2(100, 200));
+        }
+        static Func<int, int, int> func1 = new Func<int, int, int>((int a, int b) => { return a + b; });
+        static Func<int, int, int> func2 = (a, b) => { return a - b; };
+}
+```
+
+**泛型委托lambda表达式**
+
+```Csharp	
+class GenericDele2
+    {
+        public static void Show()
+        {
+            DoSomeCalc((a, b) => { return a * b; }, 100, 200);
+        }
+        static void DoSomeCalc<T>(Func<T, T, T> func, T x, T y)
+        {
+            T res = func(x, y);
+            Console.WriteLine(res);
+        }
+    }
+```
+
+### Linq 
+
+```Csharp
+Section23
+class LinqTest
+{
+     // 暂无
+}
+```
+
