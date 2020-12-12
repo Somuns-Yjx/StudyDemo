@@ -214,7 +214,12 @@ public class Condition
         
 ```
 
+#### This
+
+在类体中使用this，指代该类实例化后所引用的对象
+
 ### 语句
+
 #### 反编译
 ##### C
 项目属性->输出文件->汇编输出Fas
@@ -1263,4 +1268,239 @@ class Test
     }
 }
 ```
+
+### 修饰符
+
+#### 名称空间
+
+解决方案下新建类库
+
+```Csharp
+namespace MyLib.MyNameSpace
+{
+    public class Calculator
+    {
+        public static int Add(int a, int b)
+        { 
+            return a + b;
+        }
+    }
+}
+```
+
+```Csharp
+using MyLib.MyNameSpace; // 在其它项目中引用上述名称空间，即可调用Add方法
+```
+
+
+
+#### public
+
+类访问级别修饰符,被该修饰符修饰，引用装配集便可以访问
+
+#### internal
+
+同一项目（装配集）允许访问
+
+#### private
+
+外部成员不可访问
+
+#### protected
+
+继承链上成员可访问，外部成员不可访问，**跨程序集**
+
+#### sealed
+
+被该修饰符修饰后，该类成为**封闭类**，即不可被继承
+
+上述修饰符Demo
+
+```Csharp	
+public class Animal
+{
+     private const int totalHunger = 8;
+	 private double hunger = totalHunger;
+	 public string Name { get; set; }
+	 protected double amount { get; set; }
+	 protected void Eat(int times, double amount)
+	 {
+	     double temp = hunger - amount * times;
+	     hunger = temp >= 0 ? temp : hunger;
+	 }
+     public Animal(string name, int eatTimes)
+     {
+         Name = name;
+     }
+     ~Animal()
+     {
+         Console.WriteLine("Name : " + Name + "\nHunger is " + hunger + "\n");
+     }
+ }
+
+ public class Tiger : Animal
+ {
+     public Tiger(string name, int times)
+         : base(name, times)
+     {
+         amount = 2;
+         Eat(times, amount);
+     }
+ }
+
+ public class Squirrel : Animal
+ {
+     public Squirrel(string name, int times)
+         : base(name, times)
+     {
+         amount = 0.5;
+         Eat(times, amount);
+     }
+ }
+
+ public sealed class NewAnimal : Animal
+ {
+     public NewAnimal(string name, int times)
+         : base(name, times)
+     {
+
+     }
+ }
+
+```
+
+#### 基接口
+
+C# 只可以有一个基类，可以有多个基接口
+
+### 继承
+
+子类在基类已有的成员的基础上，对基类进行的横向与纵向的扩展。
+
+横向：对类成员个数的扩充
+
+纵向：对类成员版本更新（类成员重写）
+
+创建一个类对象，编译器会先实例化该类的基类、构造器，后再对基类的派生类做同样操作，直到创建的类
+
+**实例构造器不可直接被继承**
+
+```Csharp
+class Derive
+{
+    public static void Show()
+    {
+        Vehicle v = new Vehicle("v1");
+        Ship s = new Ship("s1");
+        SpaceShip ss = new SpaceShip("ss1");
+    }
+    public class Vehicle
+    {
+        public string Owner { get; set; }
+        public Vehicle(string Name)
+        {
+            Owner = Name;
+            Console.WriteLine(Owner);
+        }
+    }
+    internal class Ship : Vehicle  // internal本项目可见
+    {
+        public Ship(string Name)
+            : base(Name)
+        {
+            // 实例构造器不可被继承
+        }
+    }
+    private class SpaceShip : Vehicle // 外部调用不可见
+    {
+        public SpaceShip(string Name)
+            : base(Name)
+        {
+            // 实例构造器不可被继承
+        }
+    }
+}
+```
+
+### 重写
+
+**Virtual:**   虚、虚函数，名存实亡的（函数、方法）
+
+**Override:**  方法、属性均可被重写（需要方法可见、签名一致）
+
+**Csharp:**  有多态（代差）
+
+```Csharp
+public class Plants
+{
+    public virtual void ReleaseOxygen()
+    {
+        Console.WriteLine("I am releasing oxygen now !");
+    }
+}
+
+public class GreenTree : Plants
+{
+    public override void ReleaseOxygen()
+    {
+        Console.WriteLine("GreenTree is releasing oxygen now !");
+    }
+}
+
+```
+
+**Python:**  无多态（代差）
+
+```Python
+class Plants:
+    def release(self):
+        print("Plant is releasing oxygen now !")
+
+
+class GreenTree(Plants):
+    def release(self):
+        print("GreenTree is releasing oxygen now !")
+
+
+class Leaves(GreenTree):
+    def release(self):
+        print("Leaves are releasing oxygen now !")
+
+
+p = Plants()
+g = GreenTree()
+l = Leaves()
+
+p.release()
+g.release()
+l.release()
+```
+
+### 多态
+
+父类变量引用子类实例，会得到继承链上重写的最新实例
+
+```Csharp
+public class Flowers : GreenTree
+{
+    public void ReleaseOxygen() // 隐藏所派生类方法
+    {
+        Console.WriteLine("Flowers are obsorbing oxygen now !");
+    }
+}
+public class Leaves : GreenTree
+{
+    public override void ReleaseOxygen()
+    {
+        Console.WriteLine("Leaves are releasing oxygen now !");
+    }
+}
+
+Plants l = new Leaves();        // 可以左边 但是不可以 Leaves l = new Plants();
+Flowers f = new Flowers();   	// 直接调用方法，并不会出现源方法  
+l.ReleaseOxygen();				// 以上这种对象与实例不同类则被称之为 多态
+f.ReleaseOxygen();
+```
+
+
 
