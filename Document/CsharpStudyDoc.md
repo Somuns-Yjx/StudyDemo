@@ -1369,10 +1369,6 @@ public class Animal
 
 ```
 
-#### 基接口
-
-C# 只可以有一个基类，可以有多个基接口
-
 ### 继承
 
 子类在基类已有的成员的基础上，对基类进行的横向与纵向的扩展。
@@ -1502,5 +1498,433 @@ l.ReleaseOxygen();				// 以上这种对象与实例不同类则被称之为 多
 f.ReleaseOxygen();
 ```
 
+### 接口与抽象类
 
+1. 接口与抽象类均为“软件工程的产物”
+
+2. 具体类->抽象类->接口：越来越抽象，内部实现的东西越来越少
+
+3. 抽象类是未完全实现逻辑的类（可以有字段和非public成员，代表了“具体逻辑”）
+
+4. 抽象类为复用而生：专门作为基类来使用，也具有解耦功能
+
+5. 封装确定的，开放不确定的，推迟到合适的子类中去实现
+
+6. 接口是完全未实现逻辑的 “类” ，（纯 “虚” 类；只有函数成员；成员全部public）
+
+7. 接口为解耦而生：“高内聚，低耦合”，方便单元测试
+
+8. 接口是一个 “ 协约 ”，早已为工业生产所熟知（有分工必有协作，有协作必有协约）
+
+9. 他们都不能实例化，只能用来声明变量，引用具体类（concrete class）的实例
+
+10. 接口不能包括**字段**
+
+    
+
+11. Virtua：当一个方法被声明为Virtual时，它是一个虚拟方法，直到你使用ClassName variable = new ClassName();声明一个类的实例之前，它都不存在于真实的内存空间中。这个关键字在类的继承中非常常用，用来提供类方法的多态性支持。
+
+12. abstract：抽象方法声明使用，是必须被派生类覆写的方法，抽象类就是用来被继承的；可以看成是没有实现体的虚方法；如果类中包含抽象方法，那么类就必须定义为抽象类，不论是否还包含其他一般方法；抽象类不能有实体的。
+
+13. overrride：表示重写 这个类是继承于Shape类
+     virtual，abstract是告诉其它想继承于他的类 你可以重写我的这个方法或属性，否则不允许。
+
+#### 抽象类
+
+实例代码
+
+```Csharp
+public abstract class Section28
+{
+    public Section28()
+    {
+        Name = "Animal";
+    }
+    public string Name { get; set; }
+    public abstract void Eat();
+}
+public class Monkey : Section28
+{
+    public Monkey()
+    {
+        Name = "Monkey";
+    }
+    public override void Eat()
+    {
+        Console.WriteLine(Name + " is eating .");
+    }
+}
+public class Bird : Section28
+{
+    public Bird()
+    {
+        Name = "Bird";
+    }
+    public void Fly()
+    {
+        Console.WriteLine("Bird is flying .");
+    }
+    public override void Eat()
+    {
+        Console.WriteLine(Name + " is eating .");
+    }
+}
+public class Human : Section28
+{
+    public Human()
+    {
+        Name = "Human";
+    }
+    public override void Eat()
+    {
+        Console.WriteLine(Name + " is having the meal .");
+    }
+    public void MakeDishes()
+    {
+        Console.WriteLine(Name + " is making dishes .");
+    }
+}
+```
+
+
+
+#### 接口
+
+
+
+示例代码1
+
+```Csharp
+public interface IVehicle
+{
+    void Fly();
+    void Accelerate();
+    void SlowDown();
+}
+public class Pilot : IVehicle
+{
+    public void Fly()
+    {
+        Console.WriteLine("Pilot is flying .");
+    }
+    public void Accelerate()
+    {
+        Console.WriteLine("Pilot is accelerating .");
+    }
+    public void SlowDown()
+    {
+        Console.WriteLine("Pilot is slowing down .");
+    }
+}
+```
+
+示例代码2
+
+```CSharp
+public interface IPhone
+{
+    void Dail();
+    void PickUp();
+    void SendMsg();
+    void RecvMsg();
+}
+public class PhoneUser
+{
+    private IPhone _phone;
+    public PhoneUser(IPhone phone)
+    {
+        _phone = phone;
+    }
+    public void UsePhone()
+    {
+        _phone.Dail();
+        _phone.PickUp();
+        _phone.SendMsg();
+        _phone.RecvMsg();
+    }
+}
+
+public class NokiaPhone : IPhone
+{
+    public void Dail()
+    {
+        Console.WriteLine("Nokia dails .");
+    }
+    public void PickUp()
+    {
+        Console.WriteLine("Nokia picks up .");
+    }
+    public void SendMsg()
+    {
+        Console.WriteLine("Nokia Sends messages .");
+    }
+    public void RecvMsg()
+    {
+        Console.WriteLine("Nokia receives messages .");
+    }
+}
+
+public class Huawei : IPhone
+{
+    public void Dail()
+    {
+        Console.WriteLine("Huawei dails .");
+    }
+    public void PickUp()
+    {
+        Console.WriteLine("Huawei picks up .");
+    }
+    public void SendMsg()
+    {
+        Console.WriteLine("Huawei Sends messages .");
+    }
+    public void RecvMsg()
+    {
+        Console.WriteLine("Huawei receives messages .");
+    }
+}
+
+// 调用
+var pu1 = new PhoneUser(new NokiaPhone());
+pu1.UsePhone();
+Console.WriteLine("---------------------------------------------------");
+var pu2 = new PhoneUser(new Huawei());
+pu2.UsePhone();
+
+// 基接口（Base）：
+// C# 只可以有一个基类，可以有多个基接口
+```
+
+### 依赖反转
+
+```Csharp
+//-------------------------------依赖反转-----------------------------//
+public interface IPowerSuply
+{
+     int GetPower();
+}
+public class PowerSuply : IPowerSuply
+{
+    public int GetPower() { return 200; }
+}
+public class DeskFan
+{
+    private IPowerSuply _powerSuply;
+    public DeskFan(IPowerSuply powerSuply)
+    {
+        _powerSuply = powerSuply;
+    }
+
+    public string Work()
+    {
+        int power = _powerSuply.GetPower();
+        if (power <= 0)
+            return "Doesn't work ";
+        else if (power <= 100)
+            return "Work slowly";
+        else if (power <= 200)
+            return "Work Fine";
+        else
+            return "Work Out !";
+    }
+}
+
+//-------------------------------调用-----------------------------//
+var df = new DeskFan(new PowerSuply());
+Console.WriteLine(df.Work());
+
+//-------------------------------测试-----------------------------//
+public class DeskFanTest
+{
+    [TestMethod]
+    public void WorkTest()
+    {
+        string expect = "Work Fine";
+        var df = new DeskFan(new Power1());
+        Assert.IsTrue(expect == df.Work());
+    }
+    class Power1 : IPowerSuply
+    {
+        public int GetPower() { return 200; }
+    }
+}
+
+```
+
+### 接口隔离
+
+1. **Example 1** 
+
+```Csharp
+interface IGreenLeaves
+{
+    void Photosynthesize();
+}
+interface IFlowers
+{
+    void AbsorbOxygen();
+}
+
+public class GreenPlants : IGreenLeaves, IFlowers
+    {
+        public void Photosynthesize()
+        {
+            Console.WriteLine("GreenTree is photosynthesizing ");
+        }
+        public void AbsorbOxygen()
+        {
+            Console.WriteLine("GreenTree is absorbing oxygen ");
+        }
+    }
+
+public class Rose : IFlowers
+{
+    public void AbsorbOxygen()
+    {
+        Console.WriteLine("Rose is absorbing oxygen ");
+    }
+}
+
+```
+
+2. **Example 2**
+
+```Csharp
+public class ReadOnlyCollection : IEnumerable
+{
+    private int[] _array;
+    public ReadOnlyCollection(int[] array)
+        {
+            _array = array;
+        }
+
+    public IEnumerator GetEnumerator()
+    {
+        return new Enumerator(this);
+    }
+    public class Enumerator : IEnumerator
+    {
+        public ReadOnlyCollection _collection;
+        private int _head;
+        public Enumerator(ReadOnlyCollection collection)
+        {
+            _collection = collection;
+            _head = -1;
+        }
+        public object Current
+        {
+            get
+            {
+                object o = _collection._array[_head];
+                return o;
+            }
+        }
+        public bool MoveNext()
+        {
+            if (++_head < _collection._array.Length)
+                return true;
+            else
+                return false;
+        }
+        public void Reset()
+        {
+            _head = -1;
+        }
+    }
+}
+```
+
+3. **Example3（接口显式实现）**
+
+```csharp
+interface IGentleman
+{
+    void Warm();
+}
+
+public interface IRogue
+{
+    void Bully();
+}
+
+public class People : IGentleman,IRogue
+{
+    public void Warm()
+    {
+        Console.WriteLine("I am a warmheart person ");
+    }
+    void IRogue.Bully()
+    {
+        Console.WriteLine("I bullied some people before ");
+    }
+}
+
+// 调用
+var pp = new People();
+pp.Warm();
+var ppp = pp as IRogue; // var ppp = (IRogue)pp;
+ppp.Bully();
+```
+
+### 反射
+
+```Csharp
+public interface IMetal
+{
+    void Oxidize();
+    void Sold();
+}
+
+public class Iron : IMetal
+{
+    private string Name;
+
+    public Iron()
+    {
+        Name = "Iron";
+    }
+    public void Oxidize()
+    {
+        Console.WriteLine(Name + " is oxidized ");
+    }
+    public void Sold()
+    {
+        Console.WriteLine(Name + " is sold cheap ");
+    }
+}
+public class Aurum : IMetal
+{
+    private string Name;
+
+    public Aurum()
+    {
+        Name = "Aurum";
+    }
+    public void Oxidize()
+    {
+        Console.WriteLine(Name + " is merely oxidized ");
+    }
+    public void Sold()
+    {
+        Console.WriteLine(Name + " is sold expensive ");
+    }
+}
+
+// 调用
+IMetal mt = new Aurum();
+Type t = mt.GetType();
+object o = Activator.CreateInstance(t);
+MethodInfo oxidize = t.GetMethod("Oxidize");
+MethodInfo sold = t.GetMethod("Sold");
+oxidize.Invoke(o, null);
+oxidize.Invoke(o, null);
+```
+
+### 依赖注入（Part30）
+
+**下次一定**
+
+### SDk与第三方插件
+
+**下次一定**
 
