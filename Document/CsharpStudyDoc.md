@@ -1922,9 +1922,236 @@ oxidize.Invoke(o, null);
 
 ### 依赖注入（Part30）
 
-**下次一定**
+
 
 ### SDk与第三方插件
 
-**下次一定**
+
+
+### 泛型
+
+
+
+#### 泛型类
+
+```Csharp
+public class Book
+{
+        public string Name { get; set; }
+}
+public class Apple
+{
+        public string Color { get; set; }
+}
+/*-------------------Version 1.0 & 1.1 ----------------------*/
+public class Box
+{
+    //public Apple Apple { get; set; }
+    //public Book Book { get; set; }
+    public Object Cargo { get; set; }
+}
+/*-------------------Version 1.2 ----------------------*/
+public class NewBox<TCargo>
+{
+    public TCargo Cargo { get; set; }
+}
+
+// 调用
+/*-------------------Version 1.0 ----------------------*/
+
+Apple ap1 = new Apple() { Color = "Red" };
+Book bk1 = new Book() { Name = "New Book" };
+//Box bx1 = new Box() { Apple = ap1 };
+//Box bx2 = new Box() { Book = bk1 };
+
+/*-------------------Version 1.1 ----------------------*/
+
+Box bx1 = new Box() { Cargo = ap1 };
+Box bx2 = new Box() { Cargo = bk1 };
+if (bx1.Cargo as Apple != null)
+    Console.WriteLine((bx1.Cargo as Apple).Color);
+if (bx2.Cargo as Apple != null)
+    Console.WriteLine((bx2.Cargo as Apple).Color);
+
+/*-------------------Version 1.2 ----------------------*/
+
+Apple apple = new Apple() { Color = "Green" };
+Book book = new Book() { Name = "计算机科学与技术" };
+NewBox<Apple> box1 = new NewBox<Apple>() { Cargo = apple };
+NewBox<Book> box2 = new NewBox<Book>() { Cargo = book };
+Console.WriteLine(box1.Cargo.Color);
+Console.WriteLine(box2.Cargo.Name);
+
+
+```
+
+
+
+#### 泛型接口
+
+```Csharp
+interface IUnique<Tid>
+{
+     Tid ID { get; set; }
+}
+public class Student<Tid> : IUnique<Tid>
+{
+    public Tid ID { get; set; }
+    public string Name { get; set; }
+}
+
+// 调用
+Student<int> student = new Student<int> { };
+student.ID = 100000;
+student.Name = "Southeast Autumn";
+
+/*---------------- New -----------------------*/
+public class Student2: IUnique<ulong>
+{
+    public ulong  ID { get; set; }
+    public string Name { get; set; }
+}
+
+Student<int> student = new Student<int> { };
+student.ID = 100000;
+student.Name = "Southeast Autumn";
+Console.WriteLine(student.ID + " " + student.Name);
+Student2 stu2 = new Student2();
+stu2.ID = 1000000000000001;
+stu2.Name = "Southeast Autumn";
+Console.WriteLine(stu2.ID + " " + stu2.Name);
+
+```
+
+#### 泛型委托
+
+**无返回值使用Action，有返回值使用Func**
+
+```Csharp
+public class Function
+{
+    public static T[] Zip<T>(T[] a, T[] b)
+        {
+            int ai = 0;
+            int bi = 0;
+            int zi = 0;
+            T[] Zipped = new T[a.Length + b.Length];
+            do
+            {
+                if (ai < a.Length) Zipped[zi++] = a[ai++];
+                if (bi < b.Length) Zipped[zi++] = b[bi++];
+            } while (zi != a.Length + b.Length);
+            return Zipped;
+        }
+
+    public static void Add(int a, int b)
+    {
+        Console.WriteLine(a + b);
+    }
+    public static void Mul(double a, double b)
+    {
+        Console.WriteLine(a * b);
+    }
+}
+
+// 调用
+Console.WriteLine("------------------- Generic Function ----------------------");
+int[] a1 = new int[] { 1, 2, 3, 4, 5 };
+int[] a2 = new int[] { 1, 2, 3, 4, 5, 6 };
+double[] d1 = new double[] { 1.1, 1.2, 1.3, 1.4, 1.5 };
+double[] d2 = new double[] { 1.1, 1.2, 1.3, 1.4, 1.5, 1.6 };
+Function.Zip(d1, d2);
+Action<int, int> add = Function.Add; add(1, 2);
+Action<double, double> Mul = Function.Mul; Mul(1.0, 3.0);
+```
+
+### 枚举类型
+
+```Csharp
+public enum Level
+{
+    Employee = 100,
+    Manager = 101,
+    Boss = 99,
+    BigBoss,
+}
+
+// 调用
+Console.WriteLine("----------------------- Enum -------------------------");
+Console.WriteLine((int)Level.Employee);
+Console.WriteLine((int)Level.Manager);
+Console.WriteLine((int)Level.Boss);
+Console.WriteLine((int)Level.BigBoss);
+// 输出
+100
+101
+99
+100
+```
+
+**enum类型成员本身是有默认值的，如果不赋初值，那么下一成员值为上一成员值+1，即便该值已存在**
+
+
+
+```Csharp	
+public enum Skill
+{
+    Drive = 1,
+    Program = 2,
+    Cook = 4,
+    Teach = 8
+}
+
+public class Person
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public Level Level { get; set; }
+    public Skill Skill { get; set; }
+}
+
+// 调用
+Person person = new Person();
+person.Skill = Skill.Cook | Skill.Drive | Skill.Program | Skill.Teach;
+Console.WriteLine(person.Skill);
+Console.WriteLine((person.Skill & Skill.Cook) > 0);
+
+// 输出
+15
+True
+```
+
+### 结构体
+
+结构体可以由接口派生而来，不可以派生自其它结构体或类
+
+结构体不可以有显式无参构造器
+
+```Csharp
+interface ISpeak
+{
+    void Speak();
+}
+public struct Stu
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public void Speak()
+    {
+        Console.WriteLine("I have achieved it !");
+    }
+}
+
+// 调用
+Stu stu = new Stu() { ID = 1, Name = "夏东南", Age = 24 };
+stu.Speak();
+Console.WriteLine("ID " + stu.ID + "    Name " + stu.Name + "    Age " + stu.Age);
+Console.WriteLine();
+
+
+// 输出
+I have achieved it !
+ID 1    Name 夏东南    Age 24
+```
 
