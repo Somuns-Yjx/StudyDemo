@@ -70,6 +70,8 @@ namespace Section28_30
             oxidize.Invoke(o, null);
             oxidize.Invoke(o, null);
 
+            Console.Read();
+
         }
 
         static int Sum(IEnumerable nums)
