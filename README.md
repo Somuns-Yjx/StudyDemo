@@ -1,2 +1,2 @@
 # StudyDemo
-Some demo wrriten while I was learning.
+Some demo writen while I was learning.
