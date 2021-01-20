@@ -229,7 +229,18 @@ False || False = False   （左边为false，再验证右边也为false，返回
 
 ### ?? null合并 (可空类型)
 ```Csharp
- 
+ public class NullableType
+        {
+            public static void Show()
+            {
+                Nullable<int> score = null;         
+                // int ? score = null; 与左边表达式相等
+                Console.WriteLine(score.ToString());    
+                // score = score ?? 1; 如果score为null，则赋1；若不为null返回本身
+                score = 150;
+                Console.WriteLine(score.ToString());
+            }
+        }
 ```
 ### 条件操作符
 ```Csharp
@@ -294,7 +305,7 @@ public class TryStatement
                 {
                     Add("a", "b");
                 }
-                catch (Exception Ex)
+                catch (Exception Ex) // 如果未捕捉到异常，则直接跳转至finally
                 {
                     Console.WriteLine(Ex.Message);
                 }
@@ -567,6 +578,7 @@ public class OutPara  // 输出参数
 ```
 #### 引用类型
 ** 修改原始数据 **
+
 ```Csharp
 public class OutParaRef
         {
@@ -763,6 +775,28 @@ int main()
 **Action一般是无返回值无参数的委托**
 
 **泛型委托是以上两种委托的根源**
+
+控件更新委托
+
+```Csharp
+private delegate void SetTextCallback(string text);
+
+private void setText(string text)
+{
+    if (richTextBox1.InvokeRequired)
+    {
+        SetTextCallback method = new SetTextCallback(setText);
+        Invoke(method, new object[] { text });
+    }
+    else
+    {
+        richTextBox1.Text += text;
+    }
+}
+
+```
+
+
 
 ```Csharp
  public class Delegate
@@ -2015,8 +2049,6 @@ NewBox<Apple> box1 = new NewBox<Apple>() { Cargo = apple };
 NewBox<Book> box2 = new NewBox<Book>() { Cargo = book };
 Console.WriteLine(box1.Cargo.Color);
 Console.WriteLine(box2.Cargo.Name);
-
-
 ```
 
 
@@ -2191,10 +2223,12 @@ ID 1    Name 夏东南    Age 24
 
 ## 数据库使用
 
+### 一般使用
+
 ```Csharp
 public static void Connect() //  暂时叫Connect
 {
-   string connetStr = "data source=localhost; initial catalog= ; user id=root; pwd= ";
+   	const string conStr = "data source=localhost; initial catalog= ; user id=root; pwd= ;charset = utf8";
     // server=127.0.0.1/localhost 代表本机，端口号port默认是3306可以不写, catalog 是数据库
     MySqlConnection conn = new MySqlConnection(connetStr);
     try
@@ -2231,5 +2265,22 @@ while (mySqlReader.Read())
     }
 }
 
+```
+
+### 连接加密
+
+<img src="./Pictures/MySqlData.png" style="zoom:200%;" />
+
+报错：Navicat连接Mysql报错：Client does not support authentication protocol requested by server；
+解决：alter user 'root'@'localhost' identified with mysql_native_password by '********';
+
+## 模态框
+
+```Csharp
+DialogResult dr = MessageBox.Show("确认退出程序？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+if (dr == DialogResult.OK)
+{
+    System.Environment.Exit(0);
+}
 ```
 
